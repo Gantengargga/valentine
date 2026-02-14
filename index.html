@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eternal Valentine Experience | 2024</title>
+    <title>Eternal Valentine Experience | 2026</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -26,7 +26,6 @@
 
         #canvas-bg { position: fixed; top: 0; left: 0; z-index: 1; }
 
-        /* --- UI OVERLAY --- */
         .overlay {
             position: relative; z-index: 10;
             width: 100%; height: 100vh;
@@ -42,7 +41,6 @@
             padding: 40px; border-radius: 35px;
             text-align: center; width: 90%; max-width: 450px;
             box-shadow: 0 25px 80px rgba(0,0,0,0.6);
-            animation: fadeIn 1.5s ease;
         }
 
         .gold-label {
@@ -67,64 +65,41 @@
             transition: 0.4s;
         }
 
-        .input-luxury:focus { 
-            border-color: var(--gold);
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
-        }
+        .input-luxury:focus { border-color: var(--gold); background: rgba(255, 255, 255, 0.15); }
 
         .btn-luxury {
             background: linear-gradient(45deg, #d4af37, #f9e29c);
             color: #222; border: none; padding: 15px 40px;
             border-radius: 50px; font-weight: 700; cursor: pointer;
             letter-spacing: 1px; transition: 0.4s; width: 100%;
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
         }
 
-        .btn-luxury:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(212, 175, 55, 0.5); }
-
-        /* --- ENVELOPE DESIGN --- */
+        /* --- ENVELOPE --- */
         #envelope-wrapper { display: none; cursor: pointer; perspective: 1200px; }
-        
         .envelope {
             width: 320px; height: 220px; background: #fff5f6;
             position: relative; transform-style: preserve-3d;
             border-radius: 0 0 10px 10px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-
         .envelope-top {
             position: absolute; top: 0; left: 0; width: 0; height: 0;
-            border-left: 160px solid transparent;
-            border-right: 160px solid transparent;
+            border-left: 160px solid transparent; border-right: 160px solid transparent;
             border-top: 120px solid #ffccd5;
             transform-origin: top; transition: 1s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5;
         }
-
         .open .envelope-top { transform: rotateX(180deg); }
 
-        /* --- ROMANTIC LETTER --- */
+        /* --- CONTENT --- */
         #romantic-content { display: none; text-align: center; max-width: 550px; width: 90%; }
-
         .letter-paper {
             background: #fff; color: #222; padding: 50px 40px;
             border-radius: 2px; box-shadow: 0 30px 100px rgba(0,0,0,0.8);
             font-family: 'Playfair Display', serif; line-height: 2;
-            position: relative; border: 1px solid #eee;
+            position: relative;
         }
 
-        .letter-paper::before {
-            content: ''; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px;
-            border: 1px solid #f5d1d6; pointer-events: none;
-        }
-
-        /* --- ANIMATIONS --- */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .music-viz {
-            position: fixed; bottom: 40px; right: 40px;
-            display: flex; gap: 4px; align-items: flex-end; height: 30px;
-        }
+        .music-viz { position: fixed; bottom: 40px; right: 40px; display: flex; gap: 4px; height: 30px; }
         .bar { width: 3px; background: var(--rose); border-radius: 2px; height: 5px; }
         .hidden { display: none !important; }
     </style>
@@ -135,18 +110,17 @@
 
     <div class="overlay">
         <div id="step-generator" class="glass-panel">
-            <span class="gold-label">Luxury Valentine System</span>
-            <h1 class="main-title">Create Your Link</h1>
+            <span class="gold-label">Luxury Valentine Generator</span>
+            <h1 class="main-title">Eternal Link</h1>
             
-            <input type="text" id="girlName" class="input-luxury" placeholder="Nama Pasangan (Contoh: Adinda)">
-            <input type="text" id="girlWA" class="input-luxury" placeholder="WA Pasangan (Contoh: 0812345678)">
-            <input type="text" id="boyWA" class="input-luxury" placeholder="WA Kamu (Contoh: 0898765432)">
+            <input type="text" id="girlName" class="input-luxury" placeholder="Nama Pasangan (ex: Adinda)">
+            <input type="text" id="girlWA" class="input-luxury" placeholder="WA Pasangan (ex: 08123xxx)">
+            <input type="text" id="boyWA" class="input-luxury" placeholder="WA Kamu (ex: 08987xxx)">
             
-            <button class="btn-luxury" onclick="generateMagic()">GENERATE & SEND MAGIC ✨</button>
+            <button class="btn-luxury" onclick="generateMagic()">GENERATE MAGIC ✨</button>
             
             <div id="result-box" class="hidden" style="margin-top: 25px;">
-                <p style="font-size: 0.7rem; color: #aaa; margin-bottom: 10px;">Link telah dibuat! Klik tombol di bawah untuk kirim ke WhatsApp dia.</p>
-                <button class="btn-luxury" style="background: #25d366; color: white; box-shadow: 0 10px 20px rgba(37,211,102,0.3);" onclick="sendToWA()">KIRIM KE WHATSAPP ➔</button>
+                <button class="btn-luxury" style="background: #25d366; color: white;" onclick="sendToWA()">KIRIM KE WHATSAPP ➔</button>
             </div>
         </div>
 
@@ -154,19 +128,18 @@
             <div class="envelope" id="main-env">
                 <div class="envelope-top"></div>
                 <div style="position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                    <span style="font-size: 2.5rem; filter: drop-shadow(0 0 10px var(--rose));">💌</span>
-                    <p style="color: #ff4d6d; font-weight: bold; font-size: 0.7rem; margin-top: 10px;">KHUSUS UNTUKMU</p>
+                    <span style="font-size: 2.5rem;">💌</span>
                 </div>
             </div>
-            <p style="text-align: center; margin-top: 30px; font-weight: 300; letter-spacing: 2px; color: var(--gold);">TAP TO UNVEIL THE ETERNAL MESSAGE</p>
+            <p style="text-align: center; margin-top: 30px; font-weight: 300; color: var(--gold);">TAP TO OPEN</p>
         </div>
 
         <div id="romantic-content">
             <div class="letter-paper">
-                <h2 id="greet" class="main-title" style="font-size: 2.2rem; margin-bottom: 10px;"></h2>
+                <h2 id="greet" class="main-title" style="font-size: 2.2rem;"></h2>
                 <div id="typed-text" style="font-size: 1.1rem; font-style: italic; color: #444;"></div>
                 <div style="margin-top: 40px;">
-                    <button class="btn-luxury" style="padding: 15px 60px;" onclick="acceptValentine()">I WILL BE YOUR VALENTINE ❤️</button>
+                    <button class="btn-luxury" onclick="acceptValentine()">YES, I WILL ❤️</button>
                 </div>
             </div>
         </div>
@@ -181,40 +154,31 @@
     </audio>
 
     <script>
-        // --- THREE.JS BACKGROUND (PARTIKEL HATI 3D) ---
+        // --- THREE.JS BG ---
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas-bg'), antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
 
         const heartShape = new THREE.Shape();
-        heartShape.moveTo(0, 0); heartShape.bezierCurveTo(0, 0.3, 0.3, 1, 1, 1);
-        heartShape.bezierCurveTo(1.7, 1, 2, 0.3, 2, 0); heartShape.bezierCurveTo(2, -0.7, 1, -1.5, 0, -2.5);
-        heartShape.bezierCurveTo(-1, -1.5, -2, -0.7, -2, 0); heartShape.bezierCurveTo(-2, 0.3, -1.7, 1, -1, 1);
-        heartShape.bezierCurveTo(-0.3, 1, 0, 0.3, 0, 0);
+        heartShape.moveTo(0,0); heartShape.bezierCurveTo(0,0.3,0.3,1,1,1); heartShape.bezierCurveTo(1.7,1,2,0.3,2,0);
+        heartShape.bezierCurveTo(2,-0.7,1,-1.5,0,-2.5); heartShape.bezierCurveTo(-1,-1.5,-2,-0.7,-2,0);
+        heartShape.bezierCurveTo(-2,0.3,-1.7,1,-1,1); heartShape.bezierCurveTo(-0.3,1,0,0.3,0,0);
 
         const geometry = new THREE.ShapeGeometry(heartShape);
         const hearts = [];
-
         for(let i=0; i<100; i++) {
-            const material = new THREE.MeshBasicMaterial({ color: i % 2 === 0 ? 0xff4d6d : 0xd4af37, transparent: true, opacity: 0.4 });
+            const material = new THREE.MeshBasicMaterial({ color: i%2===0?0xff4d6d:0xd4af37, transparent:true, opacity:0.4 });
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.set(Math.random()*40-20, Math.random()*40-20, Math.random()*40-20);
-            mesh.rotation.z = Math.PI;
-            mesh.scale.set(0.15, 0.15, 0.15);
-            scene.add(mesh);
-            hearts.push(mesh);
+            mesh.rotation.z = Math.PI; mesh.scale.set(0.15,0.15,0.15);
+            scene.add(mesh); hearts.push(mesh);
         }
         camera.position.z = 15;
-
-        function animate() {
-            requestAnimationFrame(animate);
-            hearts.forEach(h => { h.rotation.y += 0.01; h.position.y += 0.015; if(h.position.y > 15) h.position.y = -15; });
-            renderer.render(scene, camera);
-        }
+        function animate() { requestAnimationFrame(animate); hearts.forEach(h => { h.rotation.y+=0.01; h.position.y+=0.015; if(h.position.y>15) h.position.y=-15; }); renderer.render(scene, camera); }
         animate();
 
-        // --- CORE LOGIC ---
+        // --- WA LOGIC ---
         const urlParams = new URLSearchParams(window.location.search);
         const receiver = urlParams.get('to');
         const senderWA = urlParams.get('by');
@@ -229,23 +193,22 @@
 
         function generateMagic() {
             const gName = document.getElementById('girlName').value;
-            const gWA = document.getElementById('girlWA').value.replace(/\D/g,'');
-            const bWA = document.getElementById('boyWA').value.replace(/\D/g,'');
+            let gWA = document.getElementById('girlWA').value.replace(/\D/g,'');
+            let bWA = document.getElementById('boyWA').value.replace(/\D/g,'');
 
-            if(!gName || !gWA || !bWA) return alert("Mohon lengkapi semua data sayang!");
+            if(!gName || !gWA || !bWA) return alert("Isi semua data ya!");
 
             targetWA = gWA.startsWith('0') ? '62' + gWA.slice(1) : gWA;
             const currentSenderWA = bWA.startsWith('0') ? '62' + bWA.slice(1) : bWA;
 
             const baseUrl = window.location.origin + window.location.pathname;
             generatedLink = `${baseUrl}?to=${encodeURIComponent(gName)}&by=${currentSenderWA}`;
-            
             document.getElementById('result-box').classList.remove('hidden');
         }
 
         function sendToWA() {
-            const msg = `Hai Sayang... ❤️\n\nAda sesuatu yang spesial buat kamu di sini. Tolong buka ya:\n\n${generatedLink}`;
-            window.open(`https://wa.me/${targetWA}?text=${encodeURIComponent(msg)}`, '_blank');
+            const msg = "Hai Sayang... ❤️\n\nAda sesuatu yang spesial buat kamu di sini. Tolong buka ya:\n\n" + generatedLink;
+            window.open("https://wa.me/" + targetWA + "?text=" + encodeURIComponent(msg), '_blank');
         }
 
         function openLetter() {
@@ -264,13 +227,12 @@
         }
 
         function startTyping() {
-            document.getElementById('greet').innerText = `Untukmu, ${receiver}`;
+            document.getElementById('greet').innerText = "Untukmu, " + receiver;
             const text = "Dalam setiap helai nafasku, namamu adalah doa yang paling sering aku bisikkan. Terimakasih telah hadir dan mengubah duniaku yang biasa menjadi luar biasa. Di hari kasih sayang ini, aku ingin bertanya satu hal yang paling jujur dari hatiku... Maukah kamu menjadi Valentine-ku selamanya?";
             let i = 0;
-            const target = document.getElementById('typed-text');
             function type() {
                 if(i < text.length) {
-                    target.innerHTML += text.charAt(i);
+                    document.getElementById('typed-text').innerHTML += text.charAt(i);
                     i++; setTimeout(type, 50);
                 }
             }
@@ -279,19 +241,13 @@
 
         function acceptValentine() {
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-            
-            const reply = `Hai Sayang... ❤️\n\nAku baru saja membaca pesanmu. Aku sangat tersentuh... dan jawabannya adalah: YES, I WILL! ❤️ Aku juga sangat mencintaimu!`;
-            
+            const reply = "Hai Sayang... ❤️\n\nAku baru saja membaca pesanmu. Aku sangat tersentuh... dan jawabannya adalah: YES, I WILL! ❤️ Aku juga sangat mencintaimu!";
             setTimeout(() => {
-                window.open(`https://wa.me/${senderWA}?text=${encodeURIComponent(reply)}`, '_blank');
+                window.open("https://wa.me/" + senderWA + "?text=" + encodeURIComponent(reply), '_blank');
             }, 1500);
         }
 
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+        window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
     </script>
 </body>
 </html>
