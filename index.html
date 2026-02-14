@@ -3,119 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Be My Valentine?</title>
+    <title>Valentine's Surprise Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        /* CSS untuk mempercantik tampilan */
-        body {
-            background-color: #ffeef2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
-        }
-
-        .container {
-            text-align: center;
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            z-index: 10;
-        }
-
-        h1 { color: #ff4d6d; }
+        :root { --p: #ff4d6d; --s: #ffccd5; --d: #c9184a; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Poppins', sans-serif; background: #fff0f3; overflow-x: hidden; display: flex; justify-content: center; align-items: center; }
         
-        .buttons {
-            margin-top: 30px;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        button {
-            padding: 15px 30px;
-            font-size: 18px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        #yesBtn { background-color: #ff4d6d; color: white; }
+        /* Glassmorphism Card */
+        .card { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 15px 35px rgba(255, 77, 109, 0.2); text-align: center; width: 90%; max-width: 400px; z-index: 10; position: relative; }
         
-        #noBtn {
-            background-color: #adb5bd;
-            color: white;
-            position: relative;
-        }
+        h1 { font-family: 'Dancing Script', cursive; color: var(--d); font-size: 2.5rem; margin-bottom: 20px; }
+        input { width: 80%; padding: 12px 15px; border: 2px solid var(--s); border-radius: 15px; outline: none; transition: 0.3s; font-size: 16px; margin-bottom: 15px; }
+        input:focus { border-color: var(--p); }
+        
+        button { background: var(--p); color: white; border: none; padding: 12px 25px; border-radius: 15px; cursor: pointer; font-weight: bold; transition: 0.3s; width: 90%; }
+        button:hover { background: var(--d); transform: scale(1.05); }
 
         .hidden { display: none; }
+        .result-box { margin-top: 20px; background: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px dashed var(--p); word-break: break-all; }
         
-        /* Animasi Hati Terbang */
-        .heart {
-            position: absolute;
-            color: #ff4d6d;
-            font-size: 20px;
-            animation: move 3s linear infinite;
-        }
-
-        @keyframes move {
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
-        }
+        /* Floating hearts */
+        .heart { position: absolute; color: var(--p); opacity: 0.5; pointer-events: none; animation: fly 5s linear infinite; }
+        @keyframes fly { to { transform: translateY(-110vh) rotate(360deg); opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <div class="container" id="mainCard">
-        <h1 id="question">Will you be my Valentine? ❤️</h1>
-        <div class="buttons">
-            <button id="yesBtn">Yes!</button>
-            <button id="noBtn">No</button>
+    <div id="generator" class="card">
+        <h1>Valentine Link Maker ❤️</h1>
+        <p>Buat kejutan untuk dia!</p>
+        <input type="text" id="girlName" placeholder="Masukkan nama dia...">
+        <button onclick="generateLink()">Buat Link Khusus</button>
+        
+        <div id="output" class="hidden">
+            <div class="result-box" id="generatedLink"></div>
+            <p style="font-size: 12px; color: #666; margin-top: 10px;">Salin dan kirim link di atas ke dia!</p>
+            <button onclick="copyLink()" style="background: #4caf50;">Copy Link</button>
         </div>
     </div>
 
-    <div class="container hidden" id="successMessage">
-        <h1>Yay! I Love You! 🥰</h1>
-        <p>Sampai jumpa di hari kasih sayang!</p>
+    <div id="surprise" class="card hidden">
+        <div style="font-size: 50px;">💝</div>
+        <h1 id="displayTitle">Untukmu...</h1>
+        <p id="typingText" style="min-height: 60px;"></p>
+        <button onclick="acceptValentine()">Yes, I Will! ❤️</button>
     </div>
 
     <script>
-        const noBtn = document.getElementById('noBtn');
-        const yesBtn = document.getElementById('yesBtn');
-        const mainCard = document.getElementById('mainCard');
-        const successMessage = document.getElementById('successMessage');
+        // Cek apakah ada parameter nama di URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const nameParam = urlParams.get('n');
 
-        // Fungsi membuat tombol "No" lari
-        noBtn.addEventListener('mouseover', () => {
-            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+        if (nameParam) {
+            // Jika ada nama di URL, tampilkan mode SURPRISE
+            document.getElementById('generator').classList.add('hidden');
+            document.getElementById('surprise').classList.remove('hidden');
+            document.getElementById('displayTitle').innerText = `For you, ${nameParam}! ✨`;
+            startTyping(`Hai ${nameParam}, kamu adalah orang paling spesial di hidupku. Maukah kamu jadi Valentine-ku tahun ini?`);
+            startHeartRain();
+        }
+
+        // Fungsi membuat link (Untuk Cowok)
+        function generateLink() {
+            const name = document.getElementById('girlName').value.trim();
+            if (!name) return alert("Masukkan nama dulu!");
             
-            noBtn.style.position = 'absolute';
-            noBtn.style.left = `${x}px`;
-            noBtn.style.top = `${y}px`;
-        });
+            const baseUrl = window.location.origin + window.location.pathname;
+            const fullLink = `${baseUrl}?n=${encodeURIComponent(name)}`;
+            
+            document.getElementById('generatedLink').innerText = fullLink;
+            document.getElementById('output').classList.remove('hidden');
+        }
 
-        // Menampilkan pesan sukses saat klik Yes
-        yesBtn.addEventListener('click', () => {
-            mainCard.classList.add('hidden');
-            successMessage.classList.remove('hidden');
-            startHearts();
-        });
+        // Fungsi Copy Link
+        function copyLink() {
+            const link = document.getElementById('generatedLink').innerText;
+            navigator.clipboard.writeText(link);
+            alert("Link berhasil disalin!");
+        }
 
-        // Efek hujan hati
-        function startHearts() {
+        // Efek Mengetik
+        function startTyping(text) {
+            let i = 0;
+            const element = document.getElementById('typingText');
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, 50);
+                }
+            }
+            type();
+        }
+
+        function acceptValentine() {
+            confetti({ particleCount: 200, spread: 70, origin: { y: 0.6 } });
+            alert("Yay! Hari ini jadi hari paling bahagia! ❤️");
+        }
+
+        function startHeartRain() {
             setInterval(() => {
                 const heart = document.createElement('div');
-                heart.classList.add('heart');
                 heart.innerHTML = '❤️';
+                heart.className = 'heart';
                 heart.style.left = Math.random() * 100 + 'vw';
-                heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                heart.style.bottom = "-20px";
+                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
                 document.body.appendChild(heart);
-                
                 setTimeout(() => heart.remove(), 5000);
             }, 300);
         }
