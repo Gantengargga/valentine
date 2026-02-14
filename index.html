@@ -3,198 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valentine Experience | Special For You</title>
+    <title>Valentine Luxury Experience | 2024</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@300;500;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Quicksand:wght@300;400;600&display=swap" rel="stylesheet">
+
     <style>
-        :root { --main: #ff477e; --bg: #fff0f3; }
-        body { 
-            margin: 0; padding: 0; background: var(--bg); 
-            font-family: 'Quicksand', sans-serif; overflow: hidden; 
-            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+        :root {
+            --gold: #d4af37;
+            --rose: #ff4d6d;
+            --dark: #1a1a1a;
+            --cream: #fff5f6;
         }
 
-        /* --- UI Generator --- */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 40px; border-radius: 30px;
-            box-shadow: 0 20px 50px rgba(255, 71, 126, 0.2);
-            text-align: center; border: 1px solid white;
-            z-index: 100; max-width: 400px; width: 90%;
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; font-family: 'Quicksand', sans-serif;
+            background: var(--dark); color: white;
         }
 
-        .input-elegant {
-            width: 100%; border: none; background: #fce4ec;
-            padding: 15px; border-radius: 15px; outline: none;
-            margin: 20px 0; font-size: 1rem; color: #ad1457;
-            box-sizing: border-box;
+        #canvas-bg { position: fixed; top: 0; left: 0; z-index: 1; }
+
+        /* --- UI OVERLAY --- */
+        .overlay {
+            position: relative; z-index: 10;
+            width: 100%; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.4) 100%);
         }
 
-        .btn-magic {
-            background: linear-gradient(45deg, #ff477e, #ff8fa3);
-            color: white; border: none; padding: 15px 30px;
-            border-radius: 50px; cursor: pointer; font-weight: 700;
-            box-shadow: 0 10px 20px rgba(255, 71, 126, 0.3);
-            transition: 0.3s; width: 100%;
+        /* --- GENERATOR SECTION --- */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 50px; border-radius: 40px;
+            text-align: center; width: 90%; max-width: 450px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
 
-        /* --- Animasi Burung & Surat --- */
-        #bird-container {
-            position: absolute; top: 20%; left: -200px;
-            z-index: 50; display: none;
+        .gold-text {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold); letter-spacing: 2px;
+            text-transform: uppercase; font-size: 0.8rem; margin-bottom: 10px;
+        }
+
+        .main-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem; color: var(--rose); margin: 0 0 20px 0;
+        }
+
+        .input-luxury {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--gold);
+            padding: 15px 25px; border-radius: 50px;
+            color: white; width: 100%; box-sizing: border-box;
+            font-size: 1rem; margin-bottom: 20px; outline: none;
+            transition: 0.3s;
+        }
+
+        .input-luxury:focus { box-shadow: 0 0 15px var(--gold); }
+
+        .btn-luxury {
+            background: var(--gold); color: black;
+            border: none; padding: 15px 40px; border-radius: 50px;
+            font-weight: bold; cursor: pointer; letter-spacing: 1px;
+            transition: 0.4s;
+        }
+
+        .btn-luxury:hover { transform: scale(1.05); background: white; }
+
+        /* --- ENVELOPE ANIMATION --- */
+        #envelope-wrapper {
+            display: none; cursor: pointer; perspective: 1000px;
         }
 
         .envelope {
-            width: 150px; height: 100px; background: #fff;
-            position: relative; margin: 0 auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            cursor: pointer; transform-style: preserve-3d;
-        }
-        .envelope:before {
-            content: ''; position: absolute; top: 0; left: 0;
-            border-left: 75px solid transparent; border-right: 75px solid transparent;
-            border-top: 50px solid #ff8fa3; z-index: 5;
+            width: 300px; height: 200px; background: #fff;
+            position: relative; transform-style: preserve-3d;
+            transition: transform 1s;
         }
 
-        /* --- Surprise Section --- */
-        #surprise-section { display: none; text-align: center; z-index: 60; }
-        .romantic-text {
-            font-family: 'Dancing Script', cursive;
-            font-size: 3rem; color: #ff477e; margin-bottom: 20px;
+        .envelope-top {
+            position: absolute; top: 0; left: 0; width: 0; height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 100px solid #eee;
+            transform-origin: top; transition: 0.6s; z-index: 4;
         }
 
-        canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+        .envelope.open .envelope-top { transform: rotateX(180deg); }
+
+        /* --- CONTENT DISPLAY --- */
+        #romantic-content {
+            display: none; text-align: center; max-width: 600px; padding: 20px;
+        }
+
+        .letter-paper {
+            background: white; color: #333; padding: 40px;
+            border-radius: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-family: 'Playfair Display', serif; line-height: 1.8;
+            position: relative; overflow: hidden;
+        }
+
+        /* --- MUSIC EQUALIZER --- */
+        .music-viz {
+            position: fixed; bottom: 30px; left: 50%;
+            transform: translateX(-50%); display: flex; gap: 4px;
+        }
+
+        .bar { width: 4px; height: 20px; background: var(--rose); border-radius: 2px; }
+
+        .hidden { display: none !important; }
+
     </style>
 </head>
 <body>
 
-    <canvas id="heartCanvas"></canvas>
+    <canvas id="canvas-bg"></canvas>
 
-    <div id="setup-ui" class="glass-card">
-        <h2 style="color: #ff477e; margin: 0;">Link Generator ❤️</h2>
-        <p style="font-size: 0.9rem; color: #666;">Buat link khusus untuk seseorang</p>
-        <input type="text" id="targetName" class="input-elegant" placeholder="Nama si dia...">
-        <button class="btn-magic" onclick="createLink()">Generate Link Magic ✨</button>
-        <div id="link-result" style="display: none; margin-top: 20px;">
-            <p id="finalURL" style="font-size: 0.8rem; word-break: break-all; background: #fff; padding: 10px; border-radius: 10px;"></p>
-            <button class="btn-magic" style="background: #4caf50;" onclick="copyURL()">Salin Link</button>
+    <div class="overlay">
+        <div id="step-generator" class="glass-panel">
+            <div class="gold-text">Luxury Link Creator</div>
+            <h1 class="main-title">Eternal Love</h1>
+            <input type="text" id="inputName" class="input-luxury" placeholder="Nama Pasanganmu...">
+            <button class="btn-luxury" onclick="generateMagic()">CREATE MAGIC</button>
+            <div id="result-box" class="hidden" style="margin-top: 20px;">
+                <p id="generatedURL" style="font-size: 0.7rem; color: var(--gold); margin-bottom: 10px;"></p>
+                <button class="btn-luxury" style="background: white;" onclick="copyURL()">COPY LINK</button>
+            </div>
+        </div>
+
+        <div id="envelope-wrapper" onclick="openLetter()">
+            <div class="envelope" id="main-env">
+                <div class="envelope-top"></div>
+                <div style="position: absolute; inset: 0; display: flex; justify-content: center; align-items: center;">
+                    <span style="color: #ff4d6d; font-size: 2rem;">❤️</span>
+                </div>
+            </div>
+            <p style="text-align: center; margin-top: 20px; font-weight: 300;">TAP TO OPEN ETERNAL MESSAGE</p>
+        </div>
+
+        <div id="romantic-content">
+            <div class="letter-paper">
+                <h2 id="greet" class="main-title" style="font-size: 2.5rem;"></h2>
+                <p id="typed-text" style="font-size: 1.1rem;"></p>
+                <div style="margin-top: 30px;">
+                    <button class="btn-luxury" onclick="acceptValentine()">I WILL BE YOURS</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div id="bird-container">
-        <svg width="100" height="100" viewBox="0 0 24 24" fill="#ff477e">
-            <path d="M21 5c-1.11 0-2.06.67-2.48 1.63C17.47 6.26 16.31 6 15 6c-3.31 0-6 2.69-6 6 0 1.03.26 2 .72 2.84L2 22l7-7.16c.84.46 1.81.72 2.84.72 3.31 0 6-2.69 6-6 0-1.31-.26-2.47-.63-3.52C18.33 7.06 19.28 7.73 20.39 7.73 21.32 7.73 22 7.05 22 6.12s-.68-1.12-1-1.12z"/>
-        </svg>
-        <div class="envelope" onclick="openLetter()">
-            <div style="position: absolute; bottom: 10px; width: 100%; text-align: center; color: #ff477e; font-weight: bold;">OPEN ME</div>
-        </div>
+    <div class="music-viz hidden" id="viz">
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
     </div>
 
-    <div id="surprise-section">
-        <h1 class="romantic-text" id="greetingName"></h1>
-        <p id="loveMessage" style="font-size: 1.2rem; color: #444; max-width: 500px;"></p>
-        <button class="btn-magic" style="width: auto; padding: 15px 50px;" onclick="finalHeartBurst()">I LOVE YOU TOO! ❤️</button>
-    </div>
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const name = urlParams.get('to');
+        // --- THREE.JS BACKGROUND (PARTIKEL HATI 3D) ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas-bg'), antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
 
-        // LOGIKA PENERIMA
-        if (name) {
-            document.getElementById('setup-ui').style.display = 'none';
-            document.getElementById('bird-container').style.display = 'block';
-            
-            // Animasi Burung Masuk
-            gsap.to("#bird-container", {
-                x: window.innerWidth / 2 + 100,
-                y: 100,
-                duration: 4,
-                ease: "power2.out"
-            });
+        const heartShape = new THREE.Shape();
+        heartShape.moveTo(0, 0); heartShape.bezierCurveTo(0, 0.3, 0.3, 1, 1, 1);
+        heartShape.bezierCurveTo(1.7, 1, 2, 0.3, 2, 0); heartShape.bezierCurveTo(2, -0.7, 1, -1.5, 0, -2.5);
+        heartShape.bezierCurveTo(-1, -1.5, -2, -0.7, -2, 0); heartShape.bezierCurveTo(-2, 0.3, -1.7, 1, -1, 1);
+        heartShape.bezierCurveTo(-0.3, 1, 0, 0.3, 0, 0);
+
+        const geometry = new THREE.ShapeGeometry(heartShape);
+        const hearts = [];
+
+        for(let i=0; i<150; i++) {
+            const material = new THREE.MeshBasicMaterial({ color: i % 2 === 0 ? 0xff4d6d : 0xd4af37, transparent: true, opacity: 0.6 });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(Math.random()*40-20, Math.random()*40-20, Math.random()*40-20);
+            mesh.rotation.z = Math.PI;
+            mesh.scale.set(0.2, 0.2, 0.2);
+            scene.add(mesh);
+            hearts.push(mesh);
+        }
+        camera.position.z = 15;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            hearts.forEach(h => { h.rotation.y += 0.01; h.position.y += 0.02; if(h.position.y > 10) h.position.y = -10; });
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // --- LOGIC HANDLING ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const receiverName = urlParams.get('to');
+
+        if(receiverName) {
+            document.getElementById('step-generator').classList.add('hidden');
+            document.getElementById('envelope-wrapper').style.display = 'block';
+        }
+
+        function generateMagic() {
+            const name = document.getElementById('inputName').value;
+            if(!name) return alert("Please enter a name.");
+            const link = window.location.origin + window.location.pathname + "?to=" + encodeURIComponent(name);
+            document.getElementById('generatedURL').innerText = link;
+            document.getElementById('result-box').classList.remove('hidden');
+        }
+
+        function copyURL() {
+            navigator.clipboard.writeText(document.getElementById('generatedURL').innerText);
+            alert("Luxury Link Copied!");
         }
 
         function openLetter() {
-            gsap.to("#bird-container", { scale: 0, opacity: 0, duration: 0.5 });
-            document.getElementById('surprise-section').style.display = 'block';
-            document.getElementById('greetingName').innerText = `Dearest, ${name}!`;
+            document.getElementById('main-env').classList.add('open');
+            document.getElementById('bgMusic').play();
+            document.getElementById('viz').classList.remove('hidden');
             
-            typeWriter("Sejak mengenalku, dunia terasa lebih berwarna. Di hari kasih sayang ini, aku ingin bertanya: Maukah kamu terus berjalan di sampingku?");
-            heartExplosion();
+            gsap.to(".bar", { height: 40, duration: 0.5, stagger: 0.1, repeat: -1, yoyo: true });
+            
+            setTimeout(() => {
+                gsap.to("#envelope-wrapper", { opacity: 0, scale: 0.8, duration: 1, onComplete: () => {
+                    document.getElementById('envelope-wrapper').classList.add('hidden');
+                    document.getElementById('romantic-content').style.display = 'block';
+                    startFinalSequence();
+                }});
+            }, 1000);
         }
 
-        function typeWriter(text) {
+        function startFinalSequence() {
+            document.getElementById('greet').innerText = `To My Dearest, ${receiverName}`;
+            const text = "Dalam luasnya semesta, aku bersyukur frekuensiku bertemu denganmu. Kamu bukan sekadar keinginan, tapi ketenangan yang selalu aku cari. Di hari yang penuh kasih ini, izinkan aku untuk terus menjagamu. Will you be my Valentine?";
             let i = 0;
-            const target = document.getElementById('loveMessage');
             function type() {
-                if (i < text.length) {
-                    target.innerHTML += text.charAt(i);
-                    i++;
-                    setTimeout(type, 50);
+                if(i < text.length) {
+                    document.getElementById('typed-text').innerHTML += text.charAt(i);
+                    i++; setTimeout(type, 50);
                 }
             }
             type();
         }
 
-        // LOGIKA GENERATOR
-        function createLink() {
-            const input = document.getElementById('targetName').value;
-            if(!input) return alert("Masukkan nama dulu!");
-            const url = window.location.origin + window.location.pathname + "?to=" + encodeURIComponent(input);
-            document.getElementById('finalURL').innerText = url;
-            document.getElementById('link-result').style.display = 'block';
+        function acceptValentine() {
+            const count = 200, defaults = { origin: { y: 0.7 } };
+            function fire(particleRatio, opts) {
+                confetti({ ...defaults, ...opts, particleCount: Math.floor(count * particleRatio) });
+            }
+            fire(0.25, { spread: 26, startVelocity: 55 });
+            fire(0.2, { spread: 60 });
+            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+            alert("My heart is yours forever! ❤️");
         }
 
-        function copyURL() {
-            const text = document.getElementById('finalURL').innerText;
-            navigator.clipboard.writeText(text);
-            alert("Link disalin! Kirim ke dia sekarang!");
-        }
-
-        // ANIMASI HEART EXPLOSION (Canvas Masterpiece)
-        function heartExplosion() {
-            const duration = 15 * 1000;
-            const animationEnd = Date.now() + duration;
-            const heart = confetti.shapeFromPath({ path: 'M167 10c-17.5 0-34.7 6.8-47.5 18.8L108 39.9l-11.5-11.1C83.7 16.8 66.5 10 49 10 21.9 10 0 31.9 0 59c0 31.5 24.5 55.3 54.5 81.4 10.1 8.8 21 18.3 32 28.2l21.5 19.3 21.5-19.3c11-9.9 21.9-19.4 32-28.2 30-26.1 54.5-49.9 54.5-81.4 0-27.1-21.9-49-49-49z' });
-
-            (function frame() {
-                confetti({
-                    shapes: [heart],
-                    particleCount: 2,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 0 },
-                    colors: ['#ff477e', '#ff8fa3']
-                });
-                confetti({
-                    shapes: [heart],
-                    particleCount: 2,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 1 },
-                    colors: ['#ff477e', '#ff8fa3']
-                });
-
-                if (Date.now() < animationEnd) {
-                    requestAnimationFrame(frame);
-                }
-            }());
-        }
-
-        function finalHeartBurst() {
-            confetti({
-                particleCount: 150,
-                spread: 100,
-                origin: { y: 0.6 },
-                colors: ['#ff477e', '#ff0000', '#ffffff']
-            });
-            setTimeout(() => {
-                alert("Happy Valentine's Day! ❤️");
-            }, 500);
-        }
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>
